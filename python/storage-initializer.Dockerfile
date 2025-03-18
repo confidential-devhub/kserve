@@ -40,7 +40,7 @@ ENV VIRTUAL_ENV=${VENV_PATH}
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN microdnf install -y --setopt=ubi-8-appstream-rpms.module_hotfixes=1 --disablerepo=* \
-    --enablerepo=ubi-8-baseos-rpms --enablerepo=ubi-8-appstream-rpms shadow-utils python39 python39-devel && \
+    --enablerepo=ubi-8-baseos-rpms --enablerepo=ubi-8-appstream-rpms shadow-utils python39 python39-devel openssl tar gzip && \
     microdnf clean all
 RUN useradd kserve -m -u 1000 -d /home/kserve
 
@@ -49,8 +49,9 @@ COPY --from=builder kserve kserve
 COPY ./storage-initializer /storage-initializer
 
 RUN chmod +x /storage-initializer/scripts/initializer-entrypoint
+RUN chmod +x /storage-initializer/scripts/coco-entrypoint
 RUN mkdir /work
 WORKDIR /work
 
 USER 1000
-ENTRYPOINT ["/storage-initializer/scripts/initializer-entrypoint"]
+ENTRYPOINT ["/storage-initializer/scripts/coco-entrypoint"]
